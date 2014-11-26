@@ -1,0 +1,115 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.main-banner {
+  height: 200px;
+  background-size: 260px;
+  background-image: url('/images/99-juggle_expenses.png');
+  position: relative;
+  top: 10px;
+}
+
+.main-heading {
+  background-color: #3B9C9C;
+  font-size: 32px;
+  font-family: sans-serif;
+  text-align: center;
+  font-family: "Microsoft Sans Serif";
+  font-weight: bold;
+  height: 30%;
+}
+
+.first-one {
+  position: relative;
+  top: 40px;
+  bottom: 40px;
+}
+
+#menu {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  font: 16px "Arial" , sans-serif;
+  font-weight: bold;
+  color: #080000 ;
+}
+
+#menu .name:after {
+  content: ' ';
+}
+
+#menu a {
+  text-decoration: underline;
+  margin-left: 5px;
+  color: black;
+}
+
+.passerrormessage {
+  font: 14px "Cambria" , sans-serif;
+  color: #980000;   
+}
+
+.regerrormessage {
+  font: 14px "Cambria" , sans-serif;
+  color: #980000;   
+}
+
+.loginerrormessage {
+  font: 14px "Cambria" , sans-serif;
+  color: #980000;   
+}
+
+.chart-pos {
+  position: relative;
+  top: 8px;
+  left: 20px;
+}
+
+.chart-button-pos {
+  position: relative;
+  left: 420px;
+}
+
+#ExpenseEntryTable {
+  position: relative;
+  top: 10px;  
+}
+
+#ExpenseEntryTable tr:hover {
+  background: #3CB371;
+}
+
+#ExpenseEntryTable th {
+  font: 20px "Calibri" , sans-serif;
+  font-weight: bold;
+}
+
+#ExpenseEntryTable td {
+  font: 18px "Calibri" , sans-serif;
+}
+
+.SectionA {
+  position: relative;
+  top: 24px;
+}
+
+.SectionB {
+  position: relative;
+  top: 80px;
+}
+
+.SectionC {
+  position: relative;
+  top: 12px;
+}
+
+.SectionD {
+  position: relative;
+  top: 48px;
+}

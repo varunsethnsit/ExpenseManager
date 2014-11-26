@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+      <title><%= title %></title>
+      <!-- Latest compiled and minified CSS -->
+      <link rel='stylesheet' href='/stylesheets/signin.css' />
+      <link rel='stylesheet' href='/stylesheets/style.css' />
+      
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+      
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+      
+      <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> -->
+      <!-- Optional theme -->
+      <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"> -->
+      <!-- Latest compiled and minified JavaScript -->
+      <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
+      
+      <script src='/socket.io/socket.io.js' type='text/javascript'></script>
+      <script src='javascripts/timezone.js' type='text/javascript'></script>
+      <script src='javascripts/timezone_ui.js' type='text/javascript'></script>
+  </head>
+
+  <body>
+  <!--- Login Box -->
+  <% if(locals.user) { %>
+    <div class="container" style="margin-top:30px;" id="loginbox">
+      <div class="col-md-4 center-block">
+        <div class="login-panel panel panel-default">
+              
+          <div class="panel-heading">
+            <h3 class="panel-title">Sign In</h3>
+          </div>
+
+          <div class="panel-body">
+            <form role="form" id="LoginForm" method="post">
+              <fieldset>
+                <div class="form-group">
+                    <input class="form-control" placeholder="Username" name="user[name]" id="luser" type="text" autofocus="" required>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" placeholder="Password" name="user[pass]" id="pass3" type="password" value="" required>
+                </div>
+                        <!-- Change this to a button or input when using this as a form -->
+                        <!-- <a href="#" style="margin-left:10px; font-size:120%;" class="btn btn-sm btn-success">Login</a> -->
+
+                <input type="checkbox" checked /> Remember Password <br> <br>
+                <input type="submit" value="Login" style="margin-left:10px; font-size:120%;" class="btn btn-sm btn-success" />
+
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                <a href="#" style="margin-left:80px;text-decoration:underline;font-size:110%; font-family:Calibri;" onclick="$('#loginbox').hide(); $('#luser').val('');$('#pass3').val('');$('#signupbox').show()">Create an Acccount </a>
+
+              </fieldset>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+<!--- Register Box -->
+    <div class="container" style="margin-top:30px;display:none" id="signupbox">
+        <div class="col-md-4">
+           <div class="login-panel panel panel-default">
+              
+              <div class="panel-heading">
+                  <h3 class="panel-title">Sign Up</h3>
+              </div>
+
+              <div class="panel-body">
+                <form role="form" id="SignUpForm" method="post">
+                    <fieldset>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Username" name="user[name]" id="ruser" type="text" autofocus="" required>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Password" name="user[pass]" id="pass1" type="password" value="" required>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Confirm Password" id="pass2" type="password" value="" required>
+                        </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                        <input type="submit" value="Register" style="margin-left:10px;font-family:Cambria; font-size:110%;" class="btn btn-primary btn-sm" />
+                        
+                        <!-- <a href="javascript:;" style="margin-left:10px; font-size:110%;" class="btn btn-sm btn-success">Register</a> -->
+                        
+                        <a href="#" style="margin-left:70px;text-decoration:underline;font-size:110%; font-family:Calibri;" onclick="$('#loginbox').show();$('#ruser').val('');$('#pass1').val('');$('#pass2').val('');$('#signupbox').hide(); ">Login to existing account </a>
+                    </fieldset>
+                </form>
+              </div>
+
+            </div>
+        </div>
+    </div>
+  <% } else { %>
+<!--- Entries Box -->
+  <div id="entrybox">
+    <div id='menu'>
+      <span class='name'><%= user.name %></span>
+      <a href='#' id='logoutlink'>Logout</a>
+    </div>
+
+    <div class='main-heading'> TIME ZONES APPLICATION </div>
+    
+    <div class='main-banner'></div>
+     
+    <div class="first-one">
+        <form id="TimeZoneEntry" method="post" role="form">
+          <div class="row">
+              <div class="col-xs-2">
+                <input type="text" class="form-control" placeholder="Name of Timezone" required id='timezonename'>
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control" placeholder="City Name" required id='cityname'>
+              </div>
+              <div class="col-xs-2">
+                <input type="text" class="form-control" placeholder="UTC Offset [(+/-)hh:mm]" required id='utcoffset'>
+              </div>
+              <input type="submit" value="Add Timezone" class="btn btn-primary btn-sm" />
+         </div>
+         <div>
+            <span class="glyphicon glyphicon-save"></span> Save
+            <span class="glyphicon glyphicon-saved"></span> Saved
+            <span class="glyphicon glyphicon-remove"></span> Remove
+            <span class="glyphicon glyphicon-ok"></span> Ok
+            <span class="glyphicon glyphicon-edit"></span> Edit
+          </div>
+        </form>
+        
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">Filter</div>
+            <input id="filter" class="form-control" type="email" placeholder="Type here....">
+          </div>
+        </div>
+
+        <table class="table table-striped table-bordered table-hover" id="TimeZoneEntryTable">
+          <thead>
+            <th class="text-center">Time Zone Name</th>
+            <th class="text-center">City Name</th>
+            <th class="text-center">UTC Offset</th>
+            <th class="text-center">Current Time</th>
+            <th class="text-center">Edit/Delete</th>
+          </thead>
+          <tbody class="searchable">
+          </tbody>
+        </table>
+    </div>
+  </div>
+  <% } %>
+    <script>
+
+      var JogPosts = [];
+      var socket = io.connect();
+      var TimeZoneEntries = [];
+
+      function clearFormEntries() {
+          $("#utcoffset").val('');
+          $("#timezonename").val('');
+          $("#cityname").val('');
+      }
+/*var i =0 ;
+      setInterval(function(){
+i++;
+        $('#TimeZoneEntryTable tbody td:nth-child(4)').html( 'ABc'+i );//($('#TimeZoneEntryTable tbody td:nth-child(4)') + 1);
+      }, 1000);
+*/
+/*setInterval(function(){
+                    entryTime.setTime(entryTime.getTime()+1000);
+                    $('#TimeZoneEntryTable tbody tr:eq(-1) td:nth-child(4)').text(entryTime);
+                }, 1000);*/
+
+      function updateTimeZoneEntries() {
+          
+          var l = TimeZoneEntries.length;
+          var timezonenameEntry, citynameEntry, utcoffsetEntry;
+          
+          for(var i=0; i<l; i++) {
+              /*
+                timezonenameEntry = TimeZoneEntries[i].timezonename;
+                citynameEntry = TimeZoneEntries[i].cityname;
+                utcoffsetEntry = TimeZoneEntries[i].utcoffset;
+              */
+              //console.log('TimeZoneTable entries are:');
+              //j=i+1;
+              //console.log(j);
+              //console.log($('#TimeZoneEntryTable tbody tr:eq('+i+') td:nth-child(4)').html());
+              
+              var entryDate = $('#TimeZoneEntryTable tbody tr:eq('+i+') td:nth-child(4)').text();
+              var entryTime = new Date(entryDate);
+              entryTime.setTime(entryTime.getTime()+1000);
+              
+              $('#TimeZoneEntryTable tbody tr:eq('+i+') td:nth-child(4)').text(entryTime);
+
+              //console.log($("#TimeZoneEntryTable tbody").children());
+              //console.log($("#TimeZoneEntryTable tbody").children(j).children("td:nth-child(4)").text());
+              //var entryDate = $("#TimeZoneEntryTable tbody").children(j).children("td:nth-child(4)").text();
+              //var entryTime = new Date(entryDate);
+              //entryTime.setTime(entryTime.getTime()+1000);
+              //console.log('Entry time: ' + entryTime);
+              //$("#TimeZoneEntryTable tbody").children(j).children("td:nth-child(4)").text(entryTime);
+              // tr:eq(0) > td:nth-child(4)').text());    "tr:nth-child(j)"
+              //children("td:nth-child(1)")
+              //console.log($('#TimeZoneEntryTable tbody tr:eq(0) > td:nth-child(4)').text());
+              //$('#TimeZoneEntryTable tbody tr:eq(0) td:nth-child(i+4)').text(entryTime);
+          }
+      }
+
+      function CheckDuplicatePost( Post ) {
+          //timezonename: timezonenameEntry, cityname:
+          var timezone = Post.timezonename;
+          var city = Post.cityname;
+
+          $.each(TimeZoneEntries, function(index, value) {
+              if(value.timezonename == timezone && value.cityname == city)
+                return true;  
+
+              /*var currDate = new Date(value.date);
+              var entryDateString = currDate.toDateString();
+              if(currDate>=fromDate && currDate<=toDate) {
+                JogPostsFiltered.push(value);
+                $('#JogEntryTable tbody').append("<tr bgcolor='#CEF6F5' align='center'><td>" + entryDateString + "</td><td>"+value.distance+"</td><td>" + value.time + "</td><td>" + value.speed + "</td></tr>");
+              }*/
+
+          });
+          return false;
+      }
+
+
+      //var speed = (distanceEntry/timeEntry).toFixed(2);
+      //         if(distanceEntry=='' || timeEntry=='') {
+      //           return false;
+      //         }
+      // check for empty fields
+         //
+      //  for any error add Error message, clear the messages afterwards
+      //
+         
+      //  how to add error function ...  $(document).ready(function() {
+      //$('.submit').click(function(){
+          //validateForm();   
+          //});
+          //$('.error').hide();
+         //   $('#cityname').after("<span class='error'>Enter your name</span>");
+         // });
+            
+
+      $(document).ready(function() {
+        
+          //serverTimezoneOffset = ;
+          //var time=
+          //today.setTime(today.getTime()- (servertimezoneOffset-timezoneOffset)*60*1000);
+          //todo compute the timeoffset difference for one and all and minus that from current time on browser
+          // calculatetimezone == (usertimezoneoffset-servertimezoneOffset
+          //console.log(today);
+          //console.log('The locals are: ', locals.user);
+          
+          setInterval(updateTimeZoneEntries, 1000);
+          
+          var rowHtml;
+          var rowIndex = -1;
+          var editingOn = 0;
+          var rowCounter = 0;
+          var rowtimezone;
+          var rowtimezoneoffset;
+          var rowcityname;
+
+          var D1 = "ABC";
+          var D2 = "CDE";
+          var D3 = "+10:00";
+          var D4 = 0;
+          var D5 ="+11:00";
+          var today = new Date();
+          console.log(today);
+          var timezoneOffset = today.getTimezoneOffset();
+          //console.log(timezoneOffset);
+
+          var entrytimeoffset = parseInt(D3.substr(1, 2))*60 + parseInt(D3.substr(4, 5));
+          //console.log(entrytimeoffset);
+          
+          if(D3[0]=='-'){
+            entrytimeoffset=-1*entrytimeoffset;  
+          }
+          timezoneOffset = -1*timezoneOffset;
+          
+          //console.log(entrytimeoffset);
+          var timezoneDifference = timezoneOffset - entrytimeoffset;
+          //console.log('Time zone difference: ' + timezoneDifference);
+          var entryTime = new Date();
+          entryTime.setTime(today.getTime() - timezoneDifference * 60 * 1000);
+          D4 = entryTime;      
+          //console.log('Entry time is: ' + entryTime);  
+
+           /*     $('#TimeZoneEntryTable').append("<tr bgcolor='#CEF6F5' align='center'><td>" + D1 + "</td><td>" + D2 + "</td><td> UTC " + D3 + " hours</td><td>" + D4 + "</td><td><a href='#' class='editButton'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='saveButton'><span class='glyphicon glyphicon-save' style='display:none'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='cancelButton'><span class='glyphicon glyphicon-remove' style='display:none'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='deleteButton'><span class='glyphicon glyphicon-remove-sign'></span></a></td></tr>");
+           $('#TimeZoneEntryTable').append("<tr bgcolor='#CEF6F5' align='center'><td>" + D1 + "</td><td>" + D2 + "</td><td> UTC " + D5 + " hours</td><td>" + D4 + "</td><td><a href='#' class='editButton'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='saveButton'><span class='glyphicon glyphicon-save' style='display:none'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='cancelButton'><span class='glyphicon glyphicon-remove' style='display:none'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' class='deleteButton'><span class='glyphicon glyphicon-remove-sign'></span></a></td></tr>");
+          */
+
+            //var tdElement = 
+             //   setInterval
+        /*        console.log('Text is:');
+                console.log($('#TimeZoneEntryTable tbody td:nth-child(3)').html());
+                
+                console.log($('#TimeZoneEntryTable tbody tr:eq(1) td:nth-child(3)').html());
+                setInterval(function(){
+                  entryTime.setTime(entryTime.getTime()+1000);
+                  $('#TimeZoneEntryTable tbody td:nth-child(3)').text(entryTime);
+                }, 1000);
+          */     
+                //console.log('jjjj');
+                //console.log($('#TimeZoneEntryTable tbody td:nth-child(4)').text());
+            
+                //('#TimeZoneEntryTable tbody td:nth-child(4)').val = ($('#TimeZoneEntryTable tbody td:nth-child(4)') + 1);
+
+              //todo remove this comment  socket.emit('GetPost');
+
+            /*    socket.on('Posts', function(Entries) {
+                    $.each(Entries, function(index, element) {
+                      $.each(element, function(index1, value) {
+                        JogPosts.push(value);   
+                        if(value.date != null && value.date != "") {
+                        
+                        }
+                      });
+                    });
+                }); */
+         
+          function Edit() {
+              
+              console.log('Editing: ' + editingOn);
+              console.log('RowIndex: ' + rowIndex);
+              currentrowIndex = parseInt($(this).parent().parent().index());
+              console.log('Current Row Index: ' + currentrowIndex);
+              
+              if(rowIndex!=-1 && currentrowIndex!=rowIndex) {
+                  console.log('RowHtml is: ' + rowHtml);
+                  $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').html(rowHtml);
+                  var timezone = $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').children("td:nth-child(1)").text();
+                  console.log(timezone);
+                  $(".editButton"+timezone).on("click", Edit);
+                  $(".deleteButton"+timezone).on("click", Delete);
+              }
+
+              /*if(editingOn==1) {
+                $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').html(rowHtml);
+              }
+              else {  
+                editingOn=1;
+              } */ 
+              
+              console.log('Clicked the edit button');
+  
+              var par = $(this).parent().parent();
+              var timezone = par.children("td:nth-child(1)");
+              var cityname = par.children("td:nth-child(2)");
+              var timezoneoffset = par.children("td:nth-child(3)");
+              var btns = par.children("td:nth-child(5)");
+  
+              //console.log(timezone.text());
+              //console.log(cityname);
+              //console.log(timezone.html());
+              rowtimezone = timezone.text();
+              rowcityname = cityname.text();
+              rowtimezoneoffset = timezoneoffset.text();
+              rowtimezoneoffset=rowtimezoneoffset.substr(3,6);
+              rowHtml = par.html();
+              //console.log('Row HTML is: '+ rowHtml);
+              rowIndex = parseInt($(this).parent().parent().index());
+              console.log(rowIndex);
+              alert('dsfa');
+              
+              timezone.html("<input type='text' id='txtName' value='"+timezone.html()+"'/>"); 
+              cityname.html("<input type='text' id='txtPhone' value='"+cityname.html()+"'/>"); 
+              newtimezoneoffset=timezoneoffset.html();
+              newtimezoneoffset=newtimezoneoffset.substr(3,6);
+              timezoneoffset.html("<input type='text' id='txtEmail' value='"+newtimezoneoffset+"'/>"); 
+
+              //btns.html("<img src='images/disk.png' class='btnSave'/>");
+
+              btns.html("<a href='#' data-toggle='tooltip' title='Save' class='saveButton" + timezone.text() + cityname.text() + "'><span class='glyphicon glyphicon-save'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' data-toggle='tooltip' title='Cancel' class='cancelButton'><span class='glyphicon glyphicon-remove" + timezone.text() + cityname.text() + "'></span></a>");
+
+              //alert('VVV');
+
+              $(".saveButton" + timezone.text() + cityname.text()).bind("click", Save);
+              $(".cancelButton" + timezone.text() + cityname.text()).bind("click", Cancel);
+  
+              //par.html(rowHtml);
+  
+              //var tdButtons = par.children("td:nth-child(4)");
+              //removeClass addClass
+              //removeAttr
+              // .attr
+              //timezone.attr("readonly");
+              //cityname.attr("readonly");
+              //timezoneoffset.attr("readonly");
+          }
+               
+          function Delete() {
+              editingOn=0;
+              if(rowIndex!=-1){
+                $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').html(rowHtml);
+                rowIndex = -1;
+              }
+              console.log('Hit the deletebutton');
+              var par = $(this).parent().parent();
+              var timezone = par.children("td:nth-child(1)");
+              var cityname = par.children("td:nth-child(2)");
+              var timezonenameEntry = timezone.text();
+              var citynameEntry = cityname.text();
+              console.log('Details of client side: ' + timezonenameEntry + citynameEntry);
+              socket.emit('DeletePost',{timezonename: timezonenameEntry, cityname: citynameEntry});
+              socket.on('PostDeleted', function(result) {
+                if(result.success==true) {
+                  console.log("Entry Deleted !");
+                  
+                  par.remove();
+                }
+              });
+          }
+           
+          function Save() {
+              console.log('In Save');
+              var par = $(this).parent().parent();
+              var timezone = par.children("td:nth-child(1)");
+              var cityname = par.children("td:nth-child(2)");
+              var utcoffset = par.children("td:nth-child(3)");
+              
+              var timezonenameEntry = timezone.children("input[type=text]").val();
+              var citynameEntry = cityname.children("input[type=text]").val();
+              var utcoffsetEntry = utcoffset.children("input[type=text]").val();
+             // console.log(timezonenameEntry + ' ' +citynameEntry);
+              console.log('Entries: ' + timezonenameEntry + citynameEntry + utcoffsetEntry);
+              console.log('Row Entries: ' + rowtimezone + rowcityname + rowtimezoneoffset);
+              
+              if(timezonenameEntry==rowtimezone && citynameEntry==rowcityname && utcoffsetEntry==rowtimezoneoffset){
+                console.log('Similar');
+                return;
+              }
+
+              if(timezonenameEntry=='' || timezonenameEntry==' ' || citynameEntry=='' || citynameEntry=='' || utcoffsetEntry=='' || utcoffsetEntry==' '){
+                console.log('Empty fields');
+                return;
+              }
+            
+              
+                // Validation logic
+                //(to do adding appropriate error messages)
+                // (a)Empty Messages: Right now by input 
+                // (b)Valid utc offeset
+              console.log('offset length: ' + utcoffsetEntry.length);
+              if(utcoffsetEntry.length != 6 ){
+                  console.log('Invalid UTC offset entry');
+                    //todo add an error               
+                //clearFormEntries();
+                    return false;
+              }
+              
+              if(utcoffsetEntry[3] != ':' ){
+                  console.log('Invalid UTC offset entry');
+                    //todo add an error
+              //      clearFormEntries();               
+                    return false;
+              }
+              if(utcoffsetEntry[0]!='-' && utcoffsetEntry[0]!='+') {
+                  console.log(utcoffsetEntry.charAt(0));
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error    
+                    //clearFormEntries();            
+                    return false;
+              }
+                
+              var tmp = utcoffsetEntry.substr(1, 2);
+              if(tmp[0]<'0' || tmp[0]>'9' || tmp[1]<'0' || tmp[1]>'9' ){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error
+                  //clearFormEntries();                
+                   return false; 
+              }
+                
+              var tmpNumber = parseInt(tmp);
+              if(isNaN(tmpNumber)){
+                  console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                  //  clearFormEntries();               
+                   return false; 
+              }
+
+              if(tmpNumber<0 || tmpNumber>20){
+                  console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                   // clearFormEntries();               
+                  return false; 
+              }
+                
+              tmp = utcoffsetEntry.substr(4, 5);
+              if(tmp[0]<'0' || tmp[0]>'9' || tmp[1]<'0' || tmp[1]>'9' ){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                    //clearFormEntries();               
+                   return false; 
+              }
+                
+              tmpNumber = parseInt(tmp);
+              if(isNaN(tmpNumber)){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                    //clearFormEntries();               
+                   return false; 
+              }
+
+              if(tmpNumber<0 || tmpNumber>59){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error
+              //      clearFormEntries();                
+                   return false; 
+              }
+                //console.log(tmpNumber);
+                //console.log(tmp);
+                
+                //return false;
+                
+              //(c)  Check for a duplicate entry 
+                var TimePost = {timezonename: timezonenameEntry, cityname: citynameEntry };
+                if((timezonenameEntry!=rowtimezone || citynameEntry!=rowcityname)  && CheckDuplicatePost(TimePost)==true) {
+                  //;//todo
+                  return false;
+                }
+                //socket.emit('CheckDuplicate', { timezonename: timezonenameEntry, cityname: citynameEntry });
+
+                //socket.emit('AddPost', { timezonename: timezonenameEntry, cityname: citynameEntry, utcoffset: utcoffsetEntry });
+                    
+                //$("#utcoffset").val('');
+                //$("#timezonename").val('');
+                //$("#cityname").val('');
+
+              /*if(1) {
+                $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').html(rowHtml);
+                return;
+              }*/
+
+              socket.emit('SavePost', {timezonename: timezonenameEntry, cityname: citynameEntry, utcoffset: utcoffsetEntry, rowtimezone: rowtimezone, rowcityname: rowcityname, rowtimezoneoffset: rowtimezoneoffset});
+
+
+                //<a href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                //<a href="#"><span class="glyphicon glyphicon-remove"></span></a>
+
+                //calculate the timezoneoffset from the server for once and all
+                var today = new Date();
+                //console.log(today);
+                var timezoneOffset = today.getTimezoneOffset();
+                //console.log(timezoneOffset);
+                //serverTimezoneOffset = ;
+                //var time=
+                //today.setTime(today.getTime()+24*60*60*1000);
+                //console.log(today);
+
+                var entrytimeoffset = parseInt(utcoffsetEntry.substr(1, 2))*60 + parseInt(utcoffsetEntry.substr(4, 5));
+                
+                if(utcoffsetEntry[0]=='-'){
+                  entrytimeoffset=-1*entrytimeoffset;  
+                }
+                timezoneOffset = -1*timezoneOffset;
+                
+                //console.log(entrytimeoffset);
+                var timezoneDifference = timezoneOffset - entrytimeoffset;
+                //console.log('Time zone difference: ' + timezoneDifference);
+                var entryTime = new Date();
+                entryTime.setTime(today.getTime() - timezoneDifference * 60 * 1000);
+                
+                //console.log('Entry time is: ' + entryTime);  
+
+                //var tLen = $('#TimeZoneEntryTable >tbody >tr').length;
+                //console.log('Table length is: ' + tLen);
+
+               /*$('#TimeZoneEntryTable').append("<tr bgcolor='#CEF6F5' align='center'><td>" + timezonenameEntry + "</td><td>" + citynameEntry + "</td><td> UTC " + utcoffsetEntry + " hours</td><td>" + entryTime + "</td><td><a href='#' data-toggle='tooltip' title='Edit' class='editButton" + tLen + "'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' data-toggle='tooltip' title='Delete' class='deleteButton" + tLen + "'><span class='glyphicon glyphicon-remove-sign'></span></a></td></tr>");*/
+              
+               editrowHtml = "<td>" + timezonenameEntry + "</td><td>" + citynameEntry + "</td><td>UTC" + utcoffsetEntry + " hours</td><td>" + entryTime + "</td><td><a href='#' data-toggle='tooltip' title='Edit' class='editButton" + timezonenameEntry + "'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' data-toggle='tooltip' title='Delete' class='deleteButton" + timezonenameEntry  + "'><span class='glyphicon glyphicon-remove-sign'></span></a></td>";
+
+               /*$('#TimeZoneEntryTable').append("<tr bgcolor='#CEF6F5' align='center'><td>" + timezonenameEntry + "</td><td>" + citynameEntry + "</td><td>UTC" + utcoffsetEntry + " hours</td><td>" + entryTime + "</td><td><a href='#' data-toggle='tooltip' title='Edit' class='editButton" + timezonenameEntry + "'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' data-toggle='tooltip' title='Delete' class='deleteButton" + timezonenameEntry  + "'><span class='glyphicon glyphicon-remove-sign'></span></a></td></tr>");*/
+
+              $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').html(editrowHtml);
+                rowIndex = -1;
+               $(".editButton"+timezonenameEntry).on("click", Edit);
+               $(".deleteButton"+timezonenameEntry).on("click", Delete);
+
+             //  TimeZoneEntries.push(entrydata);
+
+          }
+          
+          function Cancel() {
+              editingOn=0;
+              $('#TimeZoneEntryTable tbody tr:eq('+rowIndex+')').html(rowHtml);
+              rowIndex = -1;
+          }
+
+          socket.on('Loggedout', function(Entries) {
+              $('#entrybox').hide(); 
+              $('#loginbox').show();
+          });
+          
+          socket.on('Posts', function(Entries) {
+              $.each(Entries, function(index, element) {
+                $.each(element, function(index1, value) {
+                  TimeZoneEntries.push(value);   
+                  if(value.date != null && value.date != "") {
+                  
+                  }
+                });
+              });
+          });
+
+          socket.on('PostAdded', function(result) {
+              
+              if(result.success==true) {
+                console.log("Entry Added:::");
+                
+                var entrydata = result.entry;
+                var timezonenameEntry = entrydata.timezonename;
+                var citynameEntry = entrydata.cityname;
+                var utcoffsetEntry = entrydata.utcoffset;
+
+                //<a href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                //<a href="#"><span class="glyphicon glyphicon-remove"></span></a>
+
+                //calculate the timezoneoffset from the server for once and all
+                var today = new Date();
+                //console.log(today);
+                var timezoneOffset = today.getTimezoneOffset();
+                //console.log(timezoneOffset);
+                //serverTimezoneOffset = ;
+                //var time=
+                //today.setTime(today.getTime()+24*60*60*1000);
+                //console.log(today);
+
+                var entrytimeoffset = parseInt(utcoffsetEntry.substr(1, 2))*60 + parseInt(utcoffsetEntry.substr(4, 5));
+                
+                if(utcoffsetEntry[0]=='-'){
+                  entrytimeoffset=-1*entrytimeoffset;  
+                }
+                timezoneOffset = -1*timezoneOffset;
+                
+                //console.log(entrytimeoffset);
+                var timezoneDifference = timezoneOffset - entrytimeoffset;
+                //console.log('Time zone difference: ' + timezoneDifference);
+                var entryTime = new Date();
+                entryTime.setTime(today.getTime() - timezoneDifference * 60 * 1000);
+                
+                //console.log('Entry time is: ' + entryTime);  
+
+                var tLen = $('#TimeZoneEntryTable >tbody >tr').length;
+                console.log('Table length is: ' + tLen);
+
+               /*$('#TimeZoneEntryTable').append("<tr bgcolor='#CEF6F5' align='center'><td>" + timezonenameEntry + "</td><td>" + citynameEntry + "</td><td> UTC " + utcoffsetEntry + " hours</td><td>" + entryTime + "</td><td><a href='#' data-toggle='tooltip' title='Edit' class='editButton" + tLen + "'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' data-toggle='tooltip' title='Delete' class='deleteButton" + tLen + "'><span class='glyphicon glyphicon-remove-sign'></span></a></td></tr>");*/
+              
+               $('#TimeZoneEntryTable').append("<tr bgcolor='#CEF6F5' align='center'><td>" + timezonenameEntry + "</td><td>" + citynameEntry + "</td><td>UTC" + utcoffsetEntry + " hours</td><td>" + entryTime + "</td><td><a href='#' data-toggle='tooltip' title='Edit' class='editButton" + timezonenameEntry + "'><span class='glyphicon glyphicon-edit'></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='#' data-toggle='tooltip' title='Delete' class='deleteButton" + timezonenameEntry  + "'><span class='glyphicon glyphicon-remove-sign'></span></a></td></tr>");
+
+               $(".editButton"+timezonenameEntry).on("click", Edit);
+               $(".deleteButton"+timezonenameEntry).on("click", Delete);
+
+               TimeZoneEntries.push(entrydata);
+
+                /*
+                  setInterval(function(){
+                      entryTime.setTime(entryTime.getTime()+1000);
+                      $('#TimeZoneEntryTable tbody tr:eq(-1) td:nth-child(4)').text(entryTime);
+                  }, 1000);
+                */
+
+                //var tdElement = $('#TimeZoneEntryTable tr:eq(numEntries-1) tbody td:nth-child(3)');
+
+                //  timezonename: timezonenameEntry, cityname: citynameEntry, utcoffset: utcoffsetEntry 
+                 //     var entrydata=result.entry;
+                 //     var entryDate=new Date(entrydata.date);
+                 //     var entryDateString=entryDate.toDateString();//toLocaleDateString  
+                //      $('#JogEntryTable').prepend("<tr bgcolor='#CEF6F5' align='center'><td>"+entryDateString+"</td><td>" + entrydata.distance + "</td><td>"+entrydata.time+"</td><td>" + entrydata.speed + "</td></tr>");
+                 //     JogPosts.push(result.entry);
+
+                 /// add an element for converted time, synchroinsed with server clock
+                 // and keep updating it every minute through interval
+                 // after fifteen minutes contact server for the time ther...
+
+              }
+
+              // chart.clearChart();
+              // drawVisualization(JogPosts);
+          });
+
+          socket.on('RegisterResult', function(result){
+                
+              $("#ruser").val('');
+              $("#pass1").val('');
+              $("#pass2").val('');
+
+              if(result.success==true) {
+                // show the main entry page.
+                console.log('Registration successful'); 
+                $('#loginbox').hide();
+                $('#signupbox').hide();
+                $('#entrybox').show();
+              } else {
+                 console.log('Registration failed');
+              }
+          });
+
+          socket.on('LoginResult', function(result){
+             if(result.success==true) {
+                $("#luser").val('');
+                $("#pass3").val('');
+                //$("#pass2").val('');
+                // show the main entry page. 
+                $('#loginbox').hide();
+                $('#signupbox').hide();
+                $('#entrybox').show();
+             } else {
+               console.log('Invalid login ! Try again');
+             }
+          });
+          
+          socket.on('PostSaved', function(result) {
+              if(result.success==true) {
+                  console.log("Entry Edited Successfully !");
+                  //var par = $(this).parent().parent();
+                  //par.remove();
+                  editingOn=0;
+                  rowIndex = -1;
+              }
+          });
+
+          /*socket.on('PostDeleted', function(result) {
+              if(result.success==true) {
+                console.log("Entry Deleted !");
+                var par = $(this).parent().parent();
+                par.remove();
+              }
+          });*/
+
+          $('#filter').keyup(function() {
+              var rex = new RegExp($(this).val(), 'i');
+              $('.searchable tr').hide();
+              $('.searchable tr').filter(function() {
+                  return rex.test($(this).text());
+              }).show();
+          });
+
+          $('#SignUpForm').submit(function() {
+              console.log('Hello Register');
+          
+              var user = $("#ruser").val();
+              var pass1 = $("#pass1").val();
+              var pass2 = $("#pass2").val();
+
+              if(pass1 != pass2){
+                console.log('invalid pass');
+                //$('.error').hide();
+                $('#pass1').after("<span class='error'>Password donot match</span>");
+              }
+
+              socket.emit('RegisterUser', { username: user, password: pass1 });
+
+              return false;
+          });
+
+          $('#LoginForm').submit(function(){
+              console.log('Login Form Submit Click');
+          
+              var user = $("#luser").val();
+              var pass = $("#pass3").val();
+              
+              /*if(pass1 != pass2){
+                console.log('invalid pass');
+                //$('.error').hide();
+                $('#pass1').after("<span class='error'>Password donot match</span>");
+              }*/
+
+              socket.emit('LoginUser', { username: user, password: pass });
+              return false;
+          });
+
+          $('#logoutlink').click(function() {
+              socket.emit('Logout');
+          });
+
+          $('#TimeZoneEntryTable td > .editButton').click(function() {
+              console.log('Hit the deletebutton');
+              alert('hello');
+              var par = $(this).parent().parent();
+              var timezone = par.children("td:nth-child(1)");
+              var cityname = par.children("td:nth-child(2)");
+              var timezoneoffset = par.children("td:nth-child(3)");
+              //var tdButtons = par.children("td:nth-child(4)");
+              //removeClass addClass
+              //removeAttr
+              // .attr
+              timezone.attr("readonly");
+              cityname.attr("readonly");
+              timezoneoffset.attr("readonly");
+              socket.emit('EditPost');
+              socket.on('PostEdited', function(result) {
+                if(result.success==true) {
+                  console.log("Entry Edited Successfully !");
+                  //var par = $(this).parent().parent();
+                  //par.remove();
+                }
+              });
+          });
+
+          $('#deleteButton').click(function() {
+              console.log('Hit the deletebutton');
+              socket.emit('DeletePost');
+              socket.on('PostDeleted', function(result) {
+                if(result.success==true) {
+                  console.log("Entry Deleted !");
+                  var par = $(this).parent().parent();
+                  par.remove();
+                }
+              });
+          });
+
+          $('#TimeZoneEntry').submit(function() {
+                // check for vailityidy, 
+                // name and cityshould not be empty, // time offset can be empty, but withni 0000 < 2200
+                // other validation
+                // if failed, add an error message
+                // if validated, addd post and update the message post added
+                // update the table
+                // clear the fields
+                
+                // ability to edit and delete the posts
+                // same concepts of saving after editing as was when a new post was added
+                // filter plugin available
+
+                // for regist
+                // catch the registration errors through messages
+                // add the email in registration part
+                // session in timezoneserver in register
+                // refactor the code, add all the emits in .js of public/javascripts. and all the listen in _ui.js of publi/javascripts.
+                // peek in session variable at every start to see if the user exists
+                // store in locals.user for constant touch with 
+                //
+
+                // have to extract login state in the begininng on every load, for proper hiding and visibility of div/panels
+                
+                /*
+                +/-00:59
+                allintegrs
+                length 2 and 2 b/w split
+                value >=20 >59
+                UTC+5:30 hours
+
+                datw calcuatio
+
+                */
+
+                //console.log('hello');
+
+                var timezonenameEntry = $("#timezonename").val();
+                var citynameEntry = $("#cityname").val();
+                var utcoffsetEntry = $("#utcoffset").val();
+                console.log(utcoffsetEntry);
+
+                // Validation logic
+                //(to do adding appropriate error messages)
+                // (a)Empty Messages: Right now by input 
+                // (b)Valid utc offeset
+                if(utcoffsetEntry.length != 6 ){
+                  console.log('Invalid UTC offset entry');
+                    //todo add an error               
+                    clearFormEntries();
+                    return false;
+                }
+                if(utcoffsetEntry[3] != ':' ){
+                  console.log('Invalid UTC offset entry');
+                    //todo add an error
+                    clearFormEntries();               
+                    return false;
+                }
+                if(utcoffsetEntry[0]!='-' && utcoffsetEntry[0]!='+') {
+                  console.log(utcoffsetEntry.charAt(0));
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error    
+                    clearFormEntries();            
+                    return false;
+                }
+                
+                var tmp = utcoffsetEntry.substr(1, 2);
+                if(tmp[0]<'0' || tmp[0]>'9' || tmp[1]<'0' || tmp[1]>'9' ){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error
+                    clearFormEntries();                
+                   return false; 
+                }
+                
+                var tmpNumber = parseInt(tmp);
+                if(isNaN(tmpNumber)){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                    clearFormEntries();               
+                   return false; 
+                }
+
+                if(tmpNumber<0 || tmpNumber>20){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                    clearFormEntries();               
+                   return false; 
+                }
+                
+                tmp = utcoffsetEntry.substr(4, 5);
+                if(tmp[0]<'0' || tmp[0]>'9' || tmp[1]<'0' || tmp[1]>'9' ){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                    clearFormEntries();               
+                   return false; 
+                }
+                
+                tmpNumber = parseInt(tmp);
+                if(isNaN(tmpNumber)){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error 
+                    clearFormEntries();               
+                   return false; 
+                }
+
+                if(tmpNumber<0 || tmpNumber>59){
+                    console.log('Invalid UTC offset entry');
+                    //todo add an error
+                    clearFormEntries();                
+                   return false; 
+                }
+                //console.log(tmpNumber);
+                //console.log(tmp);
+                
+                //return false;
+                
+              //(c)  Check for a duplicate entry 
+                var TimePost = {timezonename: timezonenameEntry, cityname: citynameEntry };
+                if(CheckDuplicatePost(TimePost)==true) {
+                  ;//todo
+                }
+                //socket.emit('CheckDuplicate', { timezonename: timezonenameEntry, cityname: citynameEntry });
+
+                socket.emit('AddPost', { timezonename: timezonenameEntry, cityname: citynameEntry, utcoffset: utcoffsetEntry });
+                    
+                $("#utcoffset").val('');
+                $("#timezonename").val('');
+                $("#cityname").val('');
+
+                return false;
+            });
+        });
+          
+    </script>
+
+</body>
+</html>

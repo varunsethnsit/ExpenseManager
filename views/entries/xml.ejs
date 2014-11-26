@@ -1,0 +1,12 @@
+<entries>
+<% entries.forEach(function(entry){ %>
+  <entry>
+  	<username><%= entry.username %></username>
+    <description><%= entry.descriptionExp %></description>
+    <date><%= entry.dateExp %></date>
+    <time><%= entry.timeExp %></time>
+    <amount><%= entry.amountExp %></amount>
+    <comments><%= entry.commentsExp %></comments>
+  </entry>
+<% }) %>
+</entries>

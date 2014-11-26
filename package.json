@@ -1,0 +1,16 @@
+{
+  "name": "ExpenseManager",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node expensemanagerapp.js"
+  },
+  "dependencies": {
+    "express": "3.x",
+    "ejs": "*",
+    "bcryptjs": "*",
+    "redis": "0.7.2",
+    "socket.io":"~0.9.6",
+    "mime": "~1.2.7"
+  }
+}
